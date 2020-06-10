@@ -27,6 +27,10 @@ class CanFly:
         self.altitude = 0
         self.velocity = 0
 
+
+
+
+
     def __str__(self):
         return '{} высота {} скорость {}'.format(
             self.__class__.__name__, self.altitude, self.velocity)
