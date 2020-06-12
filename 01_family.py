@@ -45,57 +45,115 @@ from random import randint
 class House:
 
     def __init__(self):
-        pass
+        self.many = 100
+        self.food = 50
+        self.dirt = 0
 
 
 class Husband:
 
-    def __init__(self):
-        pass
+    def __init__(self, name, house):
+        self.name = name
+        self.happiness = 100
+        self.satiety = 30
+        self.house = house
 
     def __str__(self):
         return super().__str__()
 
     def act(self):
-        pass
+        if self.satiety <= 0:
+            cprint('{} умер...'.format(self.name), color='red')
+            return
+        if self.happiness < 10:
+            cprint('{} умер от депрессии'.format(self.name), color='red')
+            return
+        dice = randint(1,3)
+        if self.satiety < 11:
+            self.eat()
+        if dice = 1:
+            self.eat()
+        elif dice = 2:
+            self.work()
+        elif dice = 3:
+            self.gaming()
+        if self.house.dirt > 90:
+            self.happiness -= 10
 
     def eat(self):
-        pass
+        vol = randint(1, 30)
+        self.satiety += vol
+        self.house.food -= vol
 
     def work(self):
-        pass
+        self.satiety -= 10
+        self.house.many += 150
 
     def gaming(self):
-        pass
+        self.satiety -= 10
+        self.happiness += 20
 
 
 class Wife:
 
-    def __init__(self):
-        pass
+    def __init__(self, name, house):
+        self.name = name
+        self.happiness = 100
+        self.satiety = 30
+        self.house = house
 
     def __str__(self):
         return super().__str__()
 
     def act(self):
-        pass
+        if self.satiety <= 0:
+            cprint('{} умерла...'.format(self.name), color='red')
+            return
+        if self.happiness < 10:
+            cprint('{} умерла от депрессии'.format(self.name), color='red')
+            return
+        dice = randint(1, 2)
+        if self.satiety < 11:
+            self.eat()
+        elif self.house.food < 21:
+            self.shopping()
+        elif self.house.dirt > 100:
+            self.clean_house()
+        elif self.house.many > 400:
+            self.buy_fur_coat()
+        if self.house.dirt > 90:
+            self.happiness -= 10
+
+        if dice = 1:
+            self.eat()
+        elif dice = 2:
+            self.shopping()
+        self.house.dirt += 5
+
 
     def eat(self):
-        pass
+        vol = randint(1, 30)
+        self.satiety += vol
+        self.house.food -= vol
 
     def shopping(self):
-        pass
+        self.satiety -= 10
+        self.house.many -= 10
+        self.house.food += 10
 
     def buy_fur_coat(self):
-        pass
+        self.satiety -= 10
+        self.house.many -= 350
+        self.happiness += 60
 
     def clean_house(self):
-        pass
+        self.satiety -= 10
+        self.house.dirt -= 100
 
 
 home = House()
-serge = Husband(name='Сережа')
-masha = Wife(name='Маша')
+serge = Husband(name='Сережа',house=home)
+masha = Wife(name='Маша', house=home)
 
 for day in range(365):
     cprint('================== День {} =================='.format(day), color='red')
