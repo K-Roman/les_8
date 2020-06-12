@@ -43,13 +43,20 @@ from random import randint
 
 
 class House:
+    coats = 0
+    many = 0
+    food = 0
 
     def __init__(self):
         self.many = 100
         self.food = 100
         self.dirt = 0
+        self.cat_food = 30
+        self.cat = None
+
     def __str__(self):
-        return "В доме осталось еды - {}, денег - {}, грязно примерно на {}".format(self.food, self.many, self.dirt)
+        return "В доме осталось еды - {}, денег - {}, грязно примерно на {},  и еды для кота осталось {}"\
+            .format(self.food, self.many, self.dirt, self.cat_food)
 
 
 class Husband:
@@ -59,6 +66,7 @@ class Husband:
         self.happiness = 100
         self.satiety = 30
         self.house = house
+        self.cat = None
 
     def __str__(self):
         return "{} сытый на {}, счастлив на {}".format(self.name, self.satiety, self.happiness)
@@ -70,7 +78,7 @@ class Husband:
         if self.happiness < 10:
             cprint('{} умер от депрессии'.format(self.name), color='red')
             return
-        dice = randint(1, 3)
+        dice = randint(1, 4)
         if self.satiety < 21 and self.house.food >=41:
             self.eat()
         elif self.house.many < 70:
@@ -81,6 +89,10 @@ class Husband:
             self.work()
         elif dice == 3:
             self.gaming()
+        elif dice == 2:
+            cprint('{} гладил кота {}'.format(self.name, self.house.cat.name), color='red')
+            self.happiness += 5
+            self.satiety -= 10
         if self.house.dirt > 90:
             self.happiness -= 10
             cprint('{} немного расстроился от грязи вокруг'.format(self.name), color='red')
@@ -90,6 +102,7 @@ class Husband:
             vol = randint(10, 30)
             self.satiety += vol
             self.house.food -= vol
+            House.food += vol
             cprint('{} поел'.format(self.name), color='cyan')
         else:
             cprint('{} не покушал'.format(self.name), color='red')
@@ -98,12 +111,19 @@ class Husband:
     def work(self):
         self.satiety -= 10
         self.house.many += 150
+        House.many += 150
         cprint('{} поработал'.format(self.name), color='cyan')
 
     def gaming(self):
         self.satiety -= 10
         self.happiness += 20
         cprint('{} рубился в танки'.format(self.name), color='cyan')
+
+    def get_cat(self, cat):
+        self.house.cat = cat
+        self.house.cat.house = self.house
+
+
 
 
 class Wife:
@@ -113,6 +133,7 @@ class Wife:
         self.happiness = 100
         self.satiety = 30
         self.house = house
+
 
     def __str__(self):
         return "{} сытая на {}, счастлива на {}".format(self.name, self.satiety, self.happiness)
@@ -124,27 +145,37 @@ class Wife:
         if self.happiness < 10:
             cprint('{} умерла от депрессии'.format(self.name), color='red')
             return
+        dice = randint(1, 2)
         if self.satiety <= 21 and self.house.food >= 41:
             self.eat()
-        elif self.house.food < 41:
+        elif self.house.food < 41 or self.house.cat_food <= 12:
             self.shopping()
         elif self.house.dirt > 100:
             self.clean_house()
         elif self.house.many > 400:
             self.buy_fur_coat()
-        else:
+        elif dice == 1:
             cprint('{} вышивала весь день'.format(self.name), color='red')
             self.satiety -= 10
+        elif dice == 2:
+            cprint('{} гладила кота {}'.format(self.name, self.house.cat.name), color='red')
+            self.happiness += 5
+
         if self.house.dirt > 90:
             self.happiness -= 10
             cprint('{} немного расстроилась от грязи вокруг'.format(self.name), color='red')
         self.house.dirt += 5
+
+
+
+
 
     def eat(self):
         if self.house.food >= 41:
             vol = randint(10, 30)
             self.satiety += vol
             self.house.food -= vol
+            House.food += vol
             cprint('{} покушала'.format(self.name), color='yellow')
         else:
             cprint('{} не покушала'.format(self.name), color='yellow')
@@ -155,11 +186,16 @@ class Wife:
         self.house.many -= 50
         self.house.food += 50
         cprint('{} закупилась продуктами'.format(self.name), color='yellow')
+        if self.house.cat_food <= 12:
+            self.house.cat_food += 20
+            self.house.many -= 20
+            cprint('{} закупилась продуктами для кота'.format(self.name), color='yellow')
 
     def buy_fur_coat(self):
         self.satiety -= 10
         self.house.many -= 350
         self.happiness += 60
+        House.coats += 1
         cprint('{} наконец-то купила шубу и счастлива'.format(self.name), color='yellow')
 
     def clean_house(self):
@@ -201,10 +237,55 @@ class Child:
         self.satiety -= 10
         cprint('{} спал весь день , а что ему еще делать'.format(self.name), color='yellow')
 
+class Cat:
+
+    def __init__(self, name):
+        self.name = name
+        self.satiety = 30
+        self.house = None
+
+    def __str__(self):
+        return "Кот {} сытый на {}".format(self.name, self.satiety)
+
+    def act(self):
+        if self.satiety < 0:
+            cprint('{} умер...'.format(self.name), color='red')
+            return
+        dice = randint(1, 3)
+        if self.satiety < 10:
+            self.eat()
+        elif dice == 1:
+            self.eat()
+        elif dice == 2:
+            self.sleep()
+        elif dice == 3:
+            self.soil()
+
+    def eat(self):
+        if self.house.cat_food > 10:
+            n = randint(1, 10)
+            self.house.cat_food -= n
+            self.satiety += 2*n
+            cprint('{} поел'.format(self.name), color='green')
+        else:
+            cprint('{} не поел'.format(self.name), color='red')
+
+    def sleep(self):
+        self.satiety -= 10
+        cprint('{} спал весь день'.format(self.name), color='green')
+
+    def soil(self):
+        self.satiety -= 10
+        self.house.dirt += 5
+        cprint('{} подрал сука обои'.format(self.name), color='green')
+
+
 home = House()
+cat = Cat("Мурзик")
 serge = Husband(name='Сережа',house=home)
 masha = Wife(name='Маша', house=home)
 nick = Child(name="Максим", house=home)
+serge.get_cat(cat=cat)
 
 
 for day in range(365):
@@ -212,12 +293,41 @@ for day in range(365):
     serge.act()
     masha.act()
     nick.act()
+    cat.act()
     cprint(serge, color='cyan')
     cprint(masha, color='cyan')
     cprint(nick, color='cyan')
     cprint(home, color='green')
+    cprint(cat, color='yellow')
+print(House.food, "единиц")
+print(House.many, "руб")
+print(House.coats, "шт")
 
+# TODO после реализации первой части - отдать на проверку учителю
 
+######################################################## Часть вторая
+#
+# После подтверждения учителем первой части надо
+# отщепить ветку develop и в ней начать добавлять котов в модель семьи
+#
+# Кот может:
+#   есть,
+#   спать,
+#   драть обои
+#
+# Люди могут:
+#   гладить кота (растет степень счастья на 5 пунктов)
+#
+# В доме добавляется:
+#   еда для кота (в начале - 30)
+#
+# У кота есть имя и степень сытости (в начале - 30)
+# Любое действие кота, кроме "есть", приводит к уменьшению степени сытости на 10 пунктов
+# Еда для кота покупается за деньги: за 10 денег 10 еды.
+# Кушает кот максимум по 10 единиц еды, степень сытости растет на 2 пункта за 1 пункт еды.
+# Степень сытости не должна падать ниже 0, иначе кот умрет от голода.
+#
+# Если кот дерет обои, то грязи становится больше на 5 пунктов
 
 
 
