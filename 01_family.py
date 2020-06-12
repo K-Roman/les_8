@@ -43,6 +43,9 @@ from random import randint
 
 
 class House:
+    coats = 0
+    many = 0
+    food = 0
 
     def __init__(self):
         self.many = 100
@@ -90,6 +93,7 @@ class Husband:
             vol = randint(10, 30)
             self.satiety += vol
             self.house.food -= vol
+            House.food += vol
             cprint('{} поел'.format(self.name), color='cyan')
         else:
             cprint('{} не покушал'.format(self.name), color='red')
@@ -98,6 +102,7 @@ class Husband:
     def work(self):
         self.satiety -= 10
         self.house.many += 150
+        House.many += 150
         cprint('{} поработал'.format(self.name), color='cyan')
 
     def gaming(self):
@@ -154,6 +159,7 @@ class Wife:
             vol = randint(10, 30)
             self.satiety += vol
             self.house.food -= vol
+            House.food += vol
             cprint('{} покушала'.format(self.name), color='yellow')
         else:
             cprint('{} не покушала'.format(self.name), color='yellow')
@@ -169,6 +175,7 @@ class Wife:
         self.satiety -= 10
         self.house.many -= 350
         self.happiness += 60
+        House.coats += 1
         cprint('{} наконец-то купила шубу и счастлива'.format(self.name), color='yellow')
 
     def clean_house(self):
@@ -189,6 +196,9 @@ for day in range(365):
     cprint(serge, color='cyan')
     cprint(masha, color='cyan')
     cprint(home, color='green')
+print(House.food, "единиц")
+print(House.many, "руб")
+print(House.coats, "шт")
 
 # TODO после реализации первой части - отдать на проверку учителю
 
