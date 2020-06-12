@@ -87,7 +87,7 @@ class Husband:
 
     def eat(self):
         if self.house.food >= 41:
-            vol = randint(1, 30)
+            vol = randint(10, 30)
             self.satiety += vol
             self.house.food -= vol
             cprint('{} поел'.format(self.name), color='cyan')
@@ -151,7 +151,7 @@ class Wife:
 
     def eat(self):
         if self.house.food >= 41:
-            vol = randint(1, 30)
+            vol = randint(10, 30)
             self.satiety += vol
             self.house.food -= vol
             cprint('{} покушала'.format(self.name), color='yellow')
@@ -180,6 +180,7 @@ class Wife:
 home = House()
 serge = Husband(name='Сережа',house=home)
 masha = Wife(name='Маша', house=home)
+
 
 for day in range(365):
     cprint('================== День {} =================='.format(day), color='red')
