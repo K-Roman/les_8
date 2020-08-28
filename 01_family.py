@@ -135,6 +135,8 @@ class Wife:
         self.house = house
 
 
+
+
     def __str__(self):
         return "{} сытая на {}, счастлива на {}".format(self.name, self.satiety, self.happiness)
 
